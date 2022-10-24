@@ -3,9 +3,11 @@ package tasks;
 import java.util.Objects;
 
 public class Task {
+    private int id;
     private String name;
     private String status;
     private String description;
+
 
     public Task() {
 
@@ -13,9 +15,18 @@ public class Task {
 
     public Task(String name) {
         this.name = name;
+        status = "NEW";
     }
 
     // getters and setters
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }
@@ -45,14 +56,20 @@ public class Task {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return status == task.status && Objects.equals(name, task.name) && Objects.equals(description, task.description);
+        return id == task.id && Objects.equals(name, task.name) && Objects.equals(status, task.status) && Objects.equals(description, task.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, status, description);
     }
 
     @Override
     public String toString() {
         return "Task{" +
-                "name='" + name + '\'' +
-                ", status=" + status +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", status='" + status + '\'' +
                 ", description='" + description + '\'' +
                 '}';
     }
