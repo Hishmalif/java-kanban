@@ -1,6 +1,7 @@
 package tests;
 
 import taskmanager.TaskManager;
+import tasks.Statuses;
 
 public class Test {
     DataTask dataTask = new DataTask();
@@ -30,16 +31,16 @@ public class Test {
 
     public void updateTasksFromManager() {
         System.out.println("Update test start");
-        dataTask.task.setStatus("DONE");
-        dataTask.subTaskOne.setStatus("DONE");
-        dataTask.subTaskFour.setStatus("DONE");
+        dataTask.task.setStatus(Statuses.DONE);
+        dataTask.subTaskOne.setStatus(Statuses.DONE);
+        dataTask.subTaskFour.setStatus(Statuses.DONE);
         taskManager.updateSimple(1, dataTask.task);
         taskManager.updateSubTask(4, dataTask.subTaskOne);
         taskManager.updateSubTask(7, dataTask.subTaskFour);
 
-        if (taskManager.getSimple(1).getStatus().equals("DONE")
-                && taskManager.getEpic(2).getStatus().equals("IN_PROGRESS")
-                && taskManager.getEpic(3).getStatus().equals("IN_PROGRESS")) {
+        if (taskManager.getSimple(1).getStatus() == Statuses.DONE
+                && taskManager.getEpic(2).getStatus() == Statuses.IN_PROGRESS
+                && taskManager.getEpic(3).getStatus() == Statuses.IN_PROGRESS) {
             System.out.println("Update test passed");
             System.out.println(taskManager.getAllEpic());
         } else {
@@ -49,14 +50,15 @@ public class Test {
 
     public void removeTask() {
         System.out.println("Delete test start");
-        taskManager.removeSimple(1);
-        taskManager.removeEpic(2);
-        taskManager.removeSubTask(7);
+        taskManager.removeTasks(1);
+        taskManager.removeTasks(2);
+        taskManager.removeTasks(7);
 
         if (taskManager.getAllSimple().isEmpty() && taskManager.getAllEpic().size() == 1
-                && taskManager.getAllSubTask().size() == 4) {
+                && taskManager.getAllSubTask().size() == 1) {
             System.out.println("Delete test passed");
             System.out.println(taskManager.getAllEpic());
+            System.out.println(taskManager.getAllSubTask());
         } else {
             System.out.println("Check delete methods! Test failed!");
         }

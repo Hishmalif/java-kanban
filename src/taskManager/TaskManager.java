@@ -109,22 +109,23 @@ public class TaskManager {
         subTasks.clear();
     }
 
-    public void removeSimple(int id) { // Удаление задачи
-        simpleTasks.remove(id);
-    }
+    public void removeTasks(int id) { // Универсальное удаление
+        if (simpleTasks.containsKey(id)) { // Удаление простых задач
+            simpleTasks.remove(id);
+        } else if (epicTasks.containsKey(id)) { //Удаление эпиков и подзадач
+            List<SubTask> epicSubTask;
+            epicSubTask = getListSubtaskFromEpic(id);
 
-    public void removeEpic(int id) { // Удаление эпика
-        List<SubTask> epicSubTask;
+            for (SubTask sub : epicSubTask) {
+                subTasks.remove(sub.getId());
+            }
+            epicTasks.remove(id);
+        } else {
+            int idEpic = subTasks.get(id).getEpicTask();
 
-        epicTasks.remove(id);
-        epicSubTask = getListSubtaskFromEpic(id);
-        for (SubTask sub : epicSubTask) {
-            removeSubTask(sub.getId());
+            subTasks.remove(id); // Удаление только подзадач
+            setEpicStatus(idEpic);
         }
-    }
-
-    public void removeSubTask(int id) { // Удаление подзадачи
-        subTasks.remove(id);
     }
 
     public List<SubTask> getListSubtaskFromEpic(int idEpic) { // Получение списка подзадач для эпика
@@ -155,22 +156,22 @@ public class TaskManager {
         }
 
         if (status == 0) {
-            epicTasks.get(idEpic).setStatus("NEW");
+            epicTasks.get(idEpic).setStatus(Statuses.NEW);
         } else if (status == max) {
-            epicTasks.get(idEpic).setStatus("DONE");
+            epicTasks.get(idEpic).setStatus(Statuses.DONE);
         } else {
-            epicTasks.get(idEpic).setStatus("IN_PROGRESS");
+            epicTasks.get(idEpic).setStatus(Statuses.IN_PROGRESS);
         }
     }
 
     private int getStatusId(SubTask task) { // Преобразование статуса в id
-        String status = task.getStatus().toUpperCase();
+        Statuses status = task.getStatus();
         switch (status) {
-            case "NEW":
+            case NEW:
                 return 0;
-            case "IN_PROGRESS":
+            case IN_PROGRESS:
                 return 1;
-            case "DONE":
+            case DONE:
                 return 2;
             default:
                 return -1;
