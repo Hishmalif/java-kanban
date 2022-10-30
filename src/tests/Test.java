@@ -1,13 +1,12 @@
 package tests;
 
-import taskmanager.InMemoryTaskManager;
 import taskmanager.Managers;
 import taskmanager.TaskManager;
 import tasks.Statuses;
 
 public class Test {
     DataTask dataTask = new DataTask();
-    TaskManager taskManager = new InMemoryTaskManager();
+    TaskManager taskManager = Managers.getDefault();
 
     public void testAddTasks() {
         System.out.println("Add test start");
