@@ -2,179 +2,40 @@ package taskmanager;
 
 import tasks.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-public class TaskManager {
-    private final HashMap<Integer, Task> simpleTasks = new HashMap<>();
-    private final HashMap<Integer, Epic> epicTasks = new HashMap<>();
-    private final HashMap<Integer, SubTask> subTasks = new HashMap<>();
+public interface TaskManager {
+    void add(Task task);
 
-    public void addSimple(Task task) { // Импорт простых задач
-        if (task.getName() != null) {
-            int id = generateId();
+    void add(Epic epic);
 
-            simpleTasks.put(id, task);
-            simpleTasks.get(id).setId(id);
-        } else {
-            Errors.errorMessage(0);
-        }
-    }
+    void add(SubTask subTask);
 
-    public void addEpic(Epic epic) { // Создание эпиков
-        if (epic.getName() != null) {
-            int id = generateId();
+    void update(int id, Task task); // Обновление простых задач
 
-            epicTasks.put(id, epic);
-            epicTasks.get(id).setId(id);
-        } else {
-            Errors.errorMessage(0);
-        }
-    }
+    void update(int id, Epic epic); // Обновление Эпиков
 
-    public void addSubTask(SubTask subTask) { // Добавление подзадач для эпиков
-        if (subTask.getName() != null && epicTasks.containsKey(subTask.getEpicTask())) {
-            int id = generateId();
+    void update(int id, SubTask subTask); // Обновление подзадач
 
-            subTasks.put(id, subTask);
-            subTask.setId(id);
-            epicTasks.get(subTask.getEpicTask()).getSubTasks().add(id);
-            setEpicStatus(subTask.getEpicTask());
-        } else if (subTask.getName() == null) {
-            Errors.errorMessage(0);
-        } else if (!epicTasks.containsKey(subTask.getEpicTask())) {
-            Errors.errorMessage(1);
-        }
-    }
+    List<Task> getAllSimple(); // Получение всех задач
 
-    public void updateSimple(int id, Task task) { // Обновление простых задач
-        simpleTasks.put(id, task);
-    }
+    List<Epic> getAllEpic(); // Получение всех эпиков
 
-    public void updateEpic(int id, Epic epic) { // Обновление Эпиков
-        epicTasks.get(id).setName(epic.getName());
-        epicTasks.get(id).setDescription(epic.getDescription());
-        epicTasks.get(id).setSubTasks(epic.getSubTasks());
-    }
+    List<SubTask> getAllSubTask(); // Получение всех подзадач
 
-    public void updateSubTask(int id, SubTask subTask) { // Обновление подзадач
-        subTasks.put(id, subTask);
-        setEpicStatus(subTask.getEpicTask());
-    }
+    Task getSimple(int id); // Получение задачи
 
-    public List<Task> getAllSimple() { // Получение всех задач
-        return new ArrayList<>(simpleTasks.values());
-    }
+    Epic getEpic(int id); // Получение эпика
 
-    public List<Epic> getAllEpic() { // Получение всех эпиков
-        return new ArrayList<>(epicTasks.values());
-    }
+    SubTask getSubTask(int id); // Получение подзадачи
 
-    public List<SubTask> getAllSubTask() { // Получение всех подзадач
-        return new ArrayList<>(subTasks.values());
-    }
+    void removeSimpleGroup(); // Удаление всех задач
 
-    public Task getSimple(int id) { // Получение задачи
-        if (simpleTasks.containsKey(id)) {
-            return simpleTasks.get(id);
-        }
-        return null;
-    }
+    void removeEpicGroup(); // Удаление всех эпиков
 
-    public Epic getEpic(int id) { // Получение эпика
-        if (epicTasks.containsKey(id)) {
-            return epicTasks.get(id);
-        }
-        return null;
-    }
+    void removeSubTaskGroup(); // Удаление всех подзадач
 
-    public SubTask getSubTask(int id) { // Получение подзадачи
-        if (subTasks.containsKey(id)) {
-            return subTasks.get(id);
-        }
-        return null;
-    }
+    void removeTask(int id); // Универсальное удаление
 
-    public void removeSimpleGroup() { // Удаление всех задач
-        simpleTasks.clear();
-    }
-
-    public void removeEpicGroup() { // Удаление всех эпиков
-        epicTasks.clear();
-        subTasks.clear();
-    }
-
-    public void removeSubTaskGroup() { // Удаление всех подзадач
-        subTasks.clear();
-    }
-
-    public void removeTasks(int id) { // Универсальное удаление
-        if (simpleTasks.containsKey(id)) { // Удаление простых задач
-            simpleTasks.remove(id);
-        } else if (epicTasks.containsKey(id)) { //Удаление эпиков и подзадач
-            List<SubTask> epicSubTask;
-            epicSubTask = getListSubtaskFromEpic(id);
-
-            for (SubTask sub : epicSubTask) {
-                subTasks.remove(sub.getId());
-            }
-            epicTasks.remove(id);
-        } else {
-            int idEpic = subTasks.get(id).getEpicTask();
-
-            subTasks.remove(id); // Удаление только подзадач
-            setEpicStatus(idEpic);
-        }
-    }
-
-    public List<SubTask> getListSubtaskFromEpic(int idEpic) { // Получение списка подзадач для эпика
-        ArrayList<SubTask> subTask = new ArrayList<>();
-
-        if (epicTasks.containsKey(idEpic)) {
-            for (Integer idSub : epicTasks.get(idEpic).getSubTasks()) {
-                subTask.add(this.subTasks.get(idSub));
-            }
-            return subTask;
-        }
-        return subTask;
-    }
-
-    private int generateId() { // Общий id для задач
-        return simpleTasks.size() + epicTasks.size() + subTasks.size() + 1;
-    }
-
-    private void setEpicStatus(int idEpic) { // Метод для определение статуса у эпика
-        int status = 0;
-        int max = 0;
-
-        for (SubTask sub : subTasks.values()) {
-            if (sub.getEpicTask() == idEpic) {
-                max += 2;
-                status += getStatusId(sub);
-            }
-        }
-
-        if (status == 0) {
-            epicTasks.get(idEpic).setStatus(Statuses.NEW);
-        } else if (status == max) {
-            epicTasks.get(idEpic).setStatus(Statuses.DONE);
-        } else {
-            epicTasks.get(idEpic).setStatus(Statuses.IN_PROGRESS);
-        }
-    }
-
-    private int getStatusId(SubTask task) { // Преобразование статуса в id
-        Statuses status = task.getStatus();
-        switch (status) {
-            case NEW:
-                return 0;
-            case IN_PROGRESS:
-                return 1;
-            case DONE:
-                return 2;
-            default:
-                return -1;
-        }
-    }
+    List<SubTask> getListSubtaskFromEpic(int idEpic); // Получение списка подзадач для эпика
 }

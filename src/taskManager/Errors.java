@@ -1,8 +1,7 @@
 package taskmanager;
 
 public class Errors {
-
-    private Errors(){
+    private Errors() {
 
     }
 
