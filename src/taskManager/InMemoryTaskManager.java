@@ -16,61 +16,47 @@ public class InMemoryTaskManager implements TaskManager {
     private final HashMap<Integer, SubTask> subTasks = new HashMap<>();
 
     @Override
-    public void add(Task task) { // Импорт простых задач
+    public void add(Task task) { // Импорт задач
         if (task.getName() != null) {
             int id = generateId();
 
-            simpleTasks.put(id, task);
-            simpleTasks.get(id).setId(id);
+            if (task instanceof Epic) {
+                Epic epic = (Epic) task;
+
+                epicTasks.put(id, epic);
+                epicTasks.get(id).setId(id);
+            } else if (task instanceof SubTask) {
+                SubTask subTask = (SubTask) task;
+
+                subTasks.put(id, subTask);
+                subTask.setId(id);
+                epicTasks.get(subTask.getEpicTask()).getSubTasks().add(id);
+                setEpicStatus(subTask.getEpicTask());
+            } else {
+                simpleTasks.put(id, task);
+                simpleTasks.get(id).setId(id);
+            }
         } else {
             Errors.errorMessage(0);
         }
     }
 
     @Override
-    public void add(Epic epic) { // Создание эпиков
-        if (epic.getName() != null) {
-            int id = generateId();
+    public void update(int id, Task task) { // Обновление задач
+        if (task instanceof Epic) {
+            Epic epic = (Epic) task;
 
-            epicTasks.put(id, epic);
-            epicTasks.get(id).setId(id);
-        } else {
-            Errors.errorMessage(0);
-        }
-    }
-
-    @Override
-    public void add(SubTask subTask) { // Добавление подзадач для эпиков
-        if (subTask.getName() != null && epicTasks.containsKey(subTask.getEpicTask())) {
-            int id = generateId();
+            epicTasks.get(id).setName(epic.getName());
+            epicTasks.get(id).setDescription(epic.getDescription());
+            epicTasks.get(id).setSubTasks(epic.getSubTasks());
+        } else if (task instanceof SubTask) {
+            SubTask subTask = (SubTask) task;
 
             subTasks.put(id, subTask);
-            subTask.setId(id);
-            epicTasks.get(subTask.getEpicTask()).getSubTasks().add(id);
             setEpicStatus(subTask.getEpicTask());
-        } else if (subTask.getName() == null) {
-            Errors.errorMessage(0);
-        } else if (!epicTasks.containsKey(subTask.getEpicTask())) {
-            Errors.errorMessage(1);
+        } else {
+            simpleTasks.put(id, task);
         }
-    }
-
-    @Override
-    public void update(int id, Task task) { // Обновление простых задач
-        simpleTasks.put(id, task);
-    }
-
-    @Override
-    public void update(int id, Epic epic) { // Обновление Эпиков
-        epicTasks.get(id).setName(epic.getName());
-        epicTasks.get(id).setDescription(epic.getDescription());
-        epicTasks.get(id).setSubTasks(epic.getSubTasks());
-    }
-
-    @Override
-    public void update(int id, SubTask subTask) { // Обновление подзадач
-        subTasks.put(id, subTask);
-        setEpicStatus(subTask.getEpicTask());
     }
 
     @Override

@@ -6,17 +6,7 @@ import java.util.List;
 
 public interface TaskManager {
     void add(Task task);
-
-    void add(Epic epic);
-
-    void add(SubTask subTask);
-
     void update(int id, Task task); // Обновление простых задач
-
-    void update(int id, Epic epic); // Обновление Эпиков
-
-    void update(int id, SubTask subTask); // Обновление подзадач
-
     List<Task> getAllSimple(); // Получение всех задач
 
     List<Epic> getAllEpic(); // Получение всех эпиков
