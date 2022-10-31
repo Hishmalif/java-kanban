@@ -1,4 +1,4 @@
-package taskmanager;
+package taskManager;
 
 import tasks.Epic;
 import tasks.Statuses;
@@ -60,7 +60,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public List<Task> getAllSimple() { // Получение всех задач
+    public List<Task> getAllTask() { // Получение всех задач
         return new ArrayList<>(simpleTasks.values());
     }
 
@@ -75,7 +75,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Task getSimple(int id) { // Получение задачи
+    public Task getTask(int id) { // Получение задачи
         if (simpleTasks.containsKey(id)) {
             historyManager.add(simpleTasks.get(id));
             return simpleTasks.get(id);
@@ -102,18 +102,18 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void removeSimpleGroup() { // Удаление всех задач
+    public void removeTasks() { // Удаление всех задач
         simpleTasks.clear();
     }
 
     @Override
-    public void removeEpicGroup() { // Удаление всех эпиков
+    public void removeEpics() { // Удаление всех эпиков
         epicTasks.clear();
         subTasks.clear();
     }
 
     @Override
-    public void removeSubTaskGroup() { // Удаление всех подзадач
+    public void removeSubTasks() { // Удаление всех подзадач
         subTasks.clear();
     }
 

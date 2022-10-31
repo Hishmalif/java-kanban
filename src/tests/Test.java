@@ -1,7 +1,7 @@
 package tests;
 
-import taskmanager.Managers;
-import taskmanager.TaskManager;
+import taskManager.Managers;
+import taskManager.TaskManager;
 import tasks.Statuses;
 
 public class Test {
@@ -19,7 +19,7 @@ public class Test {
         taskManager.add(dataTask.subTaskFour);
         taskManager.add(dataTask.subTaskFive);
 
-        if (taskManager.getAllSimple().size() == 1 && taskManager.getAllEpic().size() == 2
+        if (taskManager.getAllTask().size() == 1 && taskManager.getAllEpic().size() == 2
                 && taskManager.getAllSubTask().size() == 5) {
             System.out.println(ResultTest.TEST_PASSED);
         } else {
@@ -36,7 +36,7 @@ public class Test {
         taskManager.update(4, dataTask.subTaskOne);
         taskManager.update(7, dataTask.subTaskFour);
 
-        if (taskManager.getSimple(1).getStatus() == Statuses.DONE
+        if (taskManager.getTask(1).getStatus() == Statuses.DONE
                 && taskManager.getEpic(2).getStatus() == Statuses.IN_PROGRESS
                 && taskManager.getEpic(3).getStatus() == Statuses.IN_PROGRESS) {
             System.out.println(ResultTest.TEST_PASSED);
@@ -51,7 +51,7 @@ public class Test {
         taskManager.removeTask(2);
         taskManager.removeTask(7);
 
-        if (taskManager.getAllSimple().isEmpty() && taskManager.getAllEpic().size() == 1
+        if (taskManager.getAllTask().isEmpty() && taskManager.getAllEpic().size() == 1
                 && taskManager.getAllSubTask().size() == 1) {
             System.out.println(ResultTest.TEST_PASSED);
         } else {
@@ -60,7 +60,7 @@ public class Test {
     }
 
     public void testGetHistory() {
-        taskManager.getSimple(1);
+        taskManager.getTask(1);
         System.out.println(Managers.getDefaultHistory().getHistory());
         taskManager.getEpic(2);
         System.out.println(Managers.getDefaultHistory().getHistory());
@@ -68,7 +68,7 @@ public class Test {
         System.out.println(Managers.getDefaultHistory().getHistory());
         taskManager.getSubTask(7);
         System.out.println(Managers.getDefaultHistory().getHistory());
-        taskManager.getSimple(1);
+        taskManager.getTask(1);
         System.out.println(Managers.getDefaultHistory().getHistory());
         taskManager.getEpic(3);
         System.out.println(Managers.getDefaultHistory().getHistory());
