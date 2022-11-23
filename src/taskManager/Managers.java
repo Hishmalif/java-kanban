@@ -1,5 +1,8 @@
 package taskManager;
 
+import taskManager.historyManager.HistoryManager;
+import taskManager.historyManager.InMemoryHistoryManager;
+
 public class Managers {
 
     private Managers() {

@@ -1,5 +1,7 @@
 package taskManager;
 
+import taskManager.historyManager.HistoryManager;
+import taskManager.historyManager.InMemoryHistoryManager;
 import tasks.Epic;
 import tasks.Statuses;
 import tasks.SubTask;
@@ -103,17 +105,26 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void removeTasks() { // Удаление всех задач
+        for (Integer i : simpleTasks.keySet()) {
+            historyManager.remove(i);
+        }
         simpleTasks.clear();
     }
 
     @Override
     public void removeEpics() { // Удаление всех эпиков
+        for (Integer i : epicTasks.keySet()) {
+            historyManager.remove(i);
+        }
         epicTasks.clear();
-        subTasks.clear();
+        removeSubTasks();
     }
 
     @Override
     public void removeSubTasks() { // Удаление всех подзадач
+        for (Integer i : subTasks.keySet()) {
+            historyManager.remove(i);
+        }
         subTasks.clear();
     }
 
@@ -135,6 +146,7 @@ public class InMemoryTaskManager implements TaskManager {
             subTasks.remove(id); // Удаление только подзадач
             setEpicStatus(idEpic);
         }
+        historyManager.remove(id);
     }
 
     @Override

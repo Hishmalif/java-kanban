@@ -19,12 +19,9 @@ public class Test {
         taskManager.add(dataTask.subTaskFour);
         taskManager.add(dataTask.subTaskFive);
 
-        if (taskManager.getAllTask().size() == 1 && taskManager.getAllEpic().size() == 2
-                && taskManager.getAllSubTask().size() == 5) {
-            System.out.println(ResultTest.TEST_PASSED);
-        } else {
-            System.out.println(ResultTest.TEST_FAILED);
-        }
+        boolean isCorrect = taskManager.getAllTask().size() == 1 && taskManager.getAllEpic().size() == 2
+                && taskManager.getAllSubTask().size() == 5;
+        getMessageOrError(isCorrect);
     }
 
     public void testUpdateTasks() {
@@ -36,13 +33,10 @@ public class Test {
         taskManager.update(4, dataTask.subTaskOne);
         taskManager.update(7, dataTask.subTaskFour);
 
-        if (taskManager.getTask(1).getStatus() == Statuses.DONE
+        boolean isCorrect = taskManager.getTask(1).getStatus() == Statuses.DONE
                 && taskManager.getEpic(2).getStatus() == Statuses.IN_PROGRESS
-                && taskManager.getEpic(3).getStatus() == Statuses.IN_PROGRESS) {
-            System.out.println(ResultTest.TEST_PASSED);
-        } else {
-            System.out.println(ResultTest.TEST_FAILED);
-        }
+                && taskManager.getEpic(3).getStatus() == Statuses.IN_PROGRESS;
+        getMessageOrError(isCorrect);
     }
 
     public void testRemoveTasks() {
@@ -51,32 +45,32 @@ public class Test {
         taskManager.removeTask(2);
         taskManager.removeTask(7);
 
-        if (taskManager.getAllTask().isEmpty() && taskManager.getAllEpic().size() == 1
-                && taskManager.getAllSubTask().size() == 1) {
-            System.out.println(ResultTest.TEST_PASSED);
-        } else {
-            System.out.println(ResultTest.TEST_FAILED);
-        }
+        boolean isCorrect = taskManager.getAllTask().isEmpty() && taskManager.getAllEpic().size() == 1
+                && taskManager.getAllSubTask().size() == 1;
+        getMessageOrError(isCorrect);
     }
 
     public void testGetHistory() {
-        taskManager.getTask(1);
-        System.out.println(Managers.getDefaultHistory().getHistory());
-        taskManager.getEpic(2);
-        System.out.println(Managers.getDefaultHistory().getHistory());
-        taskManager.getSubTask(4);
-        System.out.println(Managers.getDefaultHistory().getHistory());
-        taskManager.getSubTask(7);
-        System.out.println(Managers.getDefaultHistory().getHistory());
-        taskManager.getTask(1);
-        System.out.println(Managers.getDefaultHistory().getHistory());
+        System.out.println("History test start");
         taskManager.getEpic(3);
-        System.out.println(Managers.getDefaultHistory().getHistory());
+        taskManager.getTask(1);
+        taskManager.getEpic(2);
+        taskManager.getSubTask(4);
+        taskManager.getSubTask(7);
+        taskManager.getTask(1);
+        taskManager.getEpic(3);
+        taskManager.getSubTask(7);
+        taskManager.removeTask(4);
 
-        if (Managers.getDefaultHistory().getHistory().size() <= 10) {
-            System.out.println(ResultTest.TEST_PASSED);
+        boolean isCorrect = Managers.getDefaultHistory().getHistory().size() == 4;
+        getMessageOrError(isCorrect);
+    }
+
+    private void getMessageOrError(boolean isTrue) {
+        if (isTrue) {
+            System.out.println(ResultTest.TEST_PASSED.getType());
         } else {
-            System.out.println(ResultTest.TEST_FAILED);
+            System.out.println(ResultTest.TEST_FAILED.getType());
         }
     }
 }
