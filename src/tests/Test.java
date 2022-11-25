@@ -60,9 +60,9 @@ public class Test {
         taskManager.getTask(1);
         taskManager.getEpic(3);
         taskManager.getSubTask(7);
-        taskManager.removeTask(4);
 
-        boolean isCorrect = Managers.getDefaultHistory().getHistory().size() == 4;
+        int size = Managers.getDefaultHistory().getHistory().size();
+        boolean isCorrect = size <= 5 && size > 0;
         getMessageOrError(isCorrect);
     }
 

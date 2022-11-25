@@ -7,5 +7,6 @@ public class Main {
         test.testGetHistory();
         test.testUpdateTasks();
         test.testRemoveTasks();
+        test.testGetHistory();
     }
 }
