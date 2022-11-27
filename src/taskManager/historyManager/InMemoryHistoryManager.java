@@ -14,7 +14,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public List<Task> getHistory() { // Получение истории задач
         List<Task> convert = new ArrayList<>();
-        Node node = last;
+        Node node = first;
 
         if (node == null) {
             return convert;
@@ -22,10 +22,11 @@ public class InMemoryHistoryManager implements HistoryManager {
             convert.add(node.getTask());
         }
 
-        while (node.getPrevious() != null) {
-            node = node.getPrevious();
+        while (node.getNext() != null) {
+            node = node.getNext();
             convert.add(node.getTask());
         }
+
 
         for (Task task : convert) { // Проверка вывода
             System.out.println("Задача - " + task.getId());
@@ -54,7 +55,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public void remove(int id) {// Удаление !!! ТРЕБУЕТСЯ РЕАЛИЗАЦИЯ В МЕНЕДЖЕРЕ
+    public void remove(int id) {// Удаление
         removeNode(history.get(id));
         history.remove(id);
     }

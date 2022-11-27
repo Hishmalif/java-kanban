@@ -63,16 +63,25 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getAllTask() { // Получение всех задач
+        for (Task task : simpleTasks.values()) {
+            historyManager.add(task);
+        }
         return new ArrayList<>(simpleTasks.values());
     }
 
     @Override
     public List<Epic> getAllEpic() { // Получение всех эпиков
+        for (Task task : epicTasks.values()) {
+            historyManager.add(task);
+        }
         return new ArrayList<>(epicTasks.values());
     }
 
     @Override
     public List<SubTask> getAllSubTask() { // Получение всех подзадач
+        for (Task task : subTasks.values()) {
+            historyManager.add(task);
+        }
         return new ArrayList<>(subTasks.values());
     }
 
@@ -160,6 +169,11 @@ public class InMemoryTaskManager implements TaskManager {
             return subTask;
         }
         return subTask;
+    }
+
+    @Override
+    public List<Task> getHistory() {
+        return historyManager.getHistory();
     }
 
     private int generateId() { // Общий id для задач

@@ -61,7 +61,7 @@ public class Test {
         taskManager.getEpic(3);
         taskManager.getSubTask(7);
 
-        int size = Managers.getDefaultHistory().getHistory().size();
+        int size = taskManager.getHistory().size();
         boolean isCorrect = size <= 5 && size > 0;
         getMessageOrError(isCorrect);
     }

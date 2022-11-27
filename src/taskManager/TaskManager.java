@@ -6,7 +6,9 @@ import java.util.List;
 
 public interface TaskManager {
     void add(Task task);
+
     void update(int id, Task task); // Обновление простых задач
+
     List<Task> getAllTask(); // Получение всех задач
 
     List<Epic> getAllEpic(); // Получение всех эпиков
@@ -28,4 +30,6 @@ public interface TaskManager {
     void removeTask(int id); // Универсальное удаление
 
     List<SubTask> getListSubtaskFromEpic(int idEpic); // Получение списка подзадач для эпика
+
+    List<Task> getHistory(); // Получение истории
 }
