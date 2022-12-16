@@ -1,15 +1,16 @@
-package taskManager.historyManager;
+package taskManagers.historyManager;
 
 import tasks.Task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
+import java.util.HashMap;
+import java.util.ArrayList;
 
 public class InMemoryHistoryManager implements HistoryManager {
     private static Node first;
     private static Node last;
-    private static final HashMap<Integer, Node> history = new HashMap<>();
+    private static final Map<Integer, Node> history = new HashMap<>();
 
     @Override
     public List<Task> getHistory() { // Получение истории задач
@@ -25,11 +26,6 @@ public class InMemoryHistoryManager implements HistoryManager {
         while (node.getNext() != null) {
             node = node.getNext();
             convert.add(node.getTask());
-        }
-
-
-        for (Task task : convert) { // Проверка вывода
-            System.out.println("Задача - " + task.getId());
         }
         return convert;
     }
@@ -52,10 +48,14 @@ public class InMemoryHistoryManager implements HistoryManager {
         } else {
             lastNode.setNext(currNode); // Перезаписали у предыдущего значения ссылку на следующее
         }
+
+        if (getFirst() == null) {
+            setFirst(currNode); // Записали значение в first
+        }
     }
 
     @Override
-    public void remove(int id) {// Удаление
+    public void remove(int id) { // Удаление
         removeNode(history.get(id));
         history.remove(id);
     }

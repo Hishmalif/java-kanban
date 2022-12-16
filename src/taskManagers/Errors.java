@@ -1,8 +1,7 @@
-package taskManager;
+package taskManagers;
 
 public class Errors {
     private Errors() {
-
     }
 
     public static void errorMessage(int errorNumber) { // Обработчик ошибок

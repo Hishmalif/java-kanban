@@ -1,26 +1,30 @@
-package taskManager;
+package taskManagers;
 
-import taskManager.historyManager.HistoryManager;
-import taskManager.historyManager.InMemoryHistoryManager;
 import tasks.Epic;
+import tasks.Task;
 import tasks.Statuses;
 import tasks.SubTask;
-import tasks.Task;
+import taskManagers.historyManager.HistoryManager;
+import taskManagers.historyManager.InMemoryHistoryManager;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.HashMap;
+import java.util.ArrayList;
 
 public class InMemoryTaskManager implements TaskManager {
-    HistoryManager historyManager = new InMemoryHistoryManager();
+    protected HistoryManager historyManager = new InMemoryHistoryManager();
     private final HashMap<Integer, Task> simpleTasks = new HashMap<>();
     private final HashMap<Integer, Epic> epicTasks = new HashMap<>();
     private final HashMap<Integer, SubTask> subTasks = new HashMap<>();
 
     @Override
-    public void add(Task task) { // Импорт задач
+    public Task add(Task task) { // Импорт задач
         if (task.getName() != null) {
             int id = generateId();
+
+            if (task.getId() < generateId() && task.getId() != 0) {
+                return update(task.getId(), task);
+            }
 
             if (task instanceof Epic) {
                 Epic epic = (Epic) task;
@@ -41,10 +45,11 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             Errors.errorMessage(0);
         }
+        return task;
     }
 
     @Override
-    public void update(int id, Task task) { // Обновление задач
+    public Task update(int id, Task task) { // Обновление задач
         if (task instanceof Epic) {
             Epic epic = (Epic) task;
 
@@ -59,6 +64,7 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             simpleTasks.put(id, task);
         }
+        return task;
     }
 
     @Override
@@ -90,22 +96,10 @@ public class InMemoryTaskManager implements TaskManager {
         if (simpleTasks.containsKey(id)) {
             historyManager.add(simpleTasks.get(id));
             return simpleTasks.get(id);
-        }
-        return null;
-    }
-
-    @Override
-    public Epic getEpic(int id) { // Получение эпика
-        if (epicTasks.containsKey(id)) {
+        } else if (epicTasks.containsKey(id)) {
             historyManager.add(epicTasks.get(id));
             return epicTasks.get(id);
-        }
-        return null;
-    }
-
-    @Override
-    public SubTask getSubTask(int id) { // Получение подзадачи
-        if (subTasks.containsKey(id)) {
+        } else if (subTasks.containsKey(id)) {
             historyManager.add(subTasks.get(id));
             return subTasks.get(id);
         }
@@ -141,12 +135,12 @@ public class InMemoryTaskManager implements TaskManager {
     public void removeTask(int id) { // Универсальное удаление
         if (simpleTasks.containsKey(id)) { // Удаление простых задач
             simpleTasks.remove(id);
-        } else if (epicTasks.containsKey(id)) { //Удаление эпиков и подзадач
-            List<SubTask> epicSubTask;
-            epicSubTask = getListSubtaskFromEpic(id);
+        } else if (epicTasks.containsKey(id)) { // Удаление эпиков и подзадач
+            List<SubTask> epicSubTask = getListSubtaskFromEpic(id);
 
             for (SubTask sub : epicSubTask) {
                 subTasks.remove(sub.getId());
+                historyManager.remove(sub.getId());
             }
             epicTasks.remove(id);
         } else {

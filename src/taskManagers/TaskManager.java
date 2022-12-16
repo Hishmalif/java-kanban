@@ -1,13 +1,13 @@
-package taskManager;
+package taskManagers;
 
 import tasks.*;
 
 import java.util.List;
 
 public interface TaskManager {
-    void add(Task task);
+    Task add(Task task); // Добавление задач
 
-    void update(int id, Task task); // Обновление простых задач
+    Task update(int id, Task task); // Обновление простых задач
 
     List<Task> getAllTask(); // Получение всех задач
 
@@ -16,10 +16,6 @@ public interface TaskManager {
     List<SubTask> getAllSubTask(); // Получение всех подзадач
 
     Task getTask(int id); // Получение задачи
-
-    Epic getEpic(int id); // Получение эпика
-
-    SubTask getSubTask(int id); // Получение подзадачи
 
     void removeTasks(); // Удаление всех задач
 

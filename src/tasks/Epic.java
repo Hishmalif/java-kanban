@@ -1,5 +1,7 @@
 package tasks;
 
+import taskManagers.Types;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -24,17 +26,6 @@ public class Epic extends Task {
     }
 
     @Override
-    public String toString() {
-        return "Epic{" +
-                "id=" + getId() +
-                ", name='" + getName() + '\'' +
-                ", status='" + getStatus() + '\'' +
-                ", description='" + getDescription() + '\'' +
-                ", subTasks=" + subTasks +
-                '}';
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -46,5 +37,11 @@ public class Epic extends Task {
     @Override
     public int hashCode() {
         return Objects.hash(subTasks);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s,%s,%s,%s,%s,%n", super.getId(), Types.EPIC.name(), super.getName(),
+                super.getStatus(), getDescription());
     }
 }

@@ -1,5 +1,7 @@
 package tasks;
 
+import taskManagers.Types;
+
 import java.util.Objects;
 
 public class Task {
@@ -44,7 +46,7 @@ public class Task {
     }
 
     public String getDescription() {
-        return description;
+        return description != null ? description : " " ;
     }
 
     public void setDescription(String description) {
@@ -66,11 +68,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", status='" + status + '\'' +
-                ", description='" + description + '\'' +
-                '}';
+        return String.format("%s,%s,%s,%s,%s,%n", id, Types.TASK.name(), name,
+                status, getDescription());
     }
 }
