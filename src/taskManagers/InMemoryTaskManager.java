@@ -69,26 +69,31 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getAllTask() { // Получение всех задач
-        for (Task task : simpleTasks.values()) {
-            historyManager.add(task);
-        }
         return new ArrayList<>(simpleTasks.values());
     }
 
     @Override
     public List<Epic> getAllEpic() { // Получение всех эпиков
-        for (Task task : epicTasks.values()) {
-            historyManager.add(task);
-        }
         return new ArrayList<>(epicTasks.values());
     }
 
     @Override
     public List<SubTask> getAllSubTask() { // Получение всех подзадач
-        for (Task task : subTasks.values()) {
-            historyManager.add(task);
-        }
         return new ArrayList<>(subTasks.values());
+    }
+
+    @Override
+    public List<SubTask> getListSubtaskFromEpic(int idEpic) { // Получение списка подзадач для эпика
+        ArrayList<SubTask> subTask = new ArrayList<>();
+
+        if (epicTasks.containsKey(idEpic)) {
+            for (Integer idSub : epicTasks.get(idEpic).getSubTasks()) {
+                subTask.add(this.subTasks.get(idSub));
+                historyManager.add(this.subTasks.get(idSub));
+            }
+            return subTask;
+        }
+        return subTask;
     }
 
     @Override
@@ -149,20 +154,15 @@ public class InMemoryTaskManager implements TaskManager {
             subTasks.remove(id); // Удаление только подзадач
             setEpicStatus(idEpic);
         }
-        historyManager.remove(id);
-    }
 
-    @Override
-    public List<SubTask> getListSubtaskFromEpic(int idEpic) { // Получение списка подзадач для эпика
-        ArrayList<SubTask> subTask = new ArrayList<>();
-
-        if (epicTasks.containsKey(idEpic)) {
-            for (Integer idSub : epicTasks.get(idEpic).getSubTasks()) {
-                subTask.add(this.subTasks.get(idSub));
-            }
-            return subTask;
+        List<Integer> num = new ArrayList<>();
+        for (Task task: historyManager.getHistory()) {
+            num.add(task.getId());
         }
-        return subTask;
+
+        if (num.contains(id)) {
+            historyManager.remove(id);
+        }
     }
 
     @Override

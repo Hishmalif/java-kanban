@@ -11,8 +11,8 @@ public class Managers {
         return new InMemoryTaskManager();
     }
 
-    public static FileBackedTasksManager getFilesTaskManager(String filePath, String logPath, boolean isTest) { // Получение менеджера с сохранением данных
-        return new FileBackedTasksManager(filePath, logPath, isTest);
+    public static FileBackedTasksManager getFilesTaskManager(String filePath, boolean isTest) { // Получение менеджера с сохранением данных
+        return new FileBackedTasksManager(filePath, isTest);
     }
 
     public static HistoryManager getDefaultHistory() { // Получение истории задач

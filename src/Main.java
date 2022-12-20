@@ -12,7 +12,7 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            test.removeAll();
+            //test.removeAll();
         }
     }
 }

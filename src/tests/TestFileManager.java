@@ -6,6 +6,6 @@ import taskManagers.TaskManager;
 public class TestFileManager extends TestMemoryManager implements TestActions {
     @Override
     protected TaskManager setManagers() {
-        return Managers.getFilesTaskManager("", "", true);
+        return Managers.getFilesTaskManager("", true);
     }
 }

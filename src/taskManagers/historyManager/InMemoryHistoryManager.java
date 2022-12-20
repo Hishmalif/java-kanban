@@ -61,8 +61,8 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     private void removeNode(Node node) { // Вырезание ноды
-        Node old = node.getPrevious();
-        Node next = node.getNext();
+        Node old = node == null ? null : node.getPrevious();
+        Node next = node == null ? null : node.getNext();
 
         if (old == null) {
             setFirst(next);

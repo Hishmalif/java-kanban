@@ -1,8 +1,10 @@
 package tests;
 
+import tasks.Epic;
 import tasks.Statuses;
 import taskManagers.Managers;
 import taskManagers.TaskManager;
+import tasks.SubTask;
 
 public class TestMemoryManager implements TestActions {
     private final DataTask dataTask = new DataTask();
@@ -12,18 +14,23 @@ public class TestMemoryManager implements TestActions {
     public void testAddTasks() {
         System.out.println("Add test start");
         try {
-            taskManager.add(dataTask.task);
-            taskManager.add(dataTask.epicOne);
-            taskManager.add(dataTask.epicTwo);
-            taskManager.add(dataTask.subTaskOne);
-            taskManager.add(dataTask.subTaskTwo);
-            taskManager.add(dataTask.subTaskThee);
-            taskManager.add(dataTask.subTaskFour);
-            taskManager.add(dataTask.subTaskFive);
+            if (!(taskManager.getAllTask().isEmpty() && taskManager.getAllEpic().isEmpty()
+                    && taskManager.getAllSubTask().isEmpty())) {
+                return;
+            }
 
-            boolean isCorrect = taskManager.getAllTask().size() == 1 && taskManager.getAllEpic().size() == 2
+            dataTask.task = taskManager.add(dataTask.task);
+            dataTask.epicOne = (Epic) taskManager.add(dataTask.epicOne);
+            dataTask.epicTwo = (Epic) taskManager.add(dataTask.epicTwo);
+            dataTask.subTaskOne = (SubTask) taskManager.add(dataTask.subTaskOne);
+            dataTask.subTaskTwo = (SubTask) taskManager.add(dataTask.subTaskTwo);
+            dataTask.subTaskThee = (SubTask) taskManager.add(dataTask.subTaskThee);
+            dataTask.subTaskFour = (SubTask) taskManager.add(dataTask.subTaskFour);
+            dataTask.subTaskFive = (SubTask) taskManager.add(dataTask.subTaskFive);
+
+            boolean isUpload = taskManager.getAllTask().size() == 1 && taskManager.getAllEpic().size() == 2
                     && taskManager.getAllSubTask().size() == 5;
-            getMessageOrError(isCorrect);
+            getMessageOrError(isUpload);
         } catch (Exception e) {
             getMessageOrError(false);
             e.printStackTrace();
@@ -52,7 +59,7 @@ public class TestMemoryManager implements TestActions {
     }
 
     @Override
-    public void testRemoveTasks() {
+    public void testRemoveTasks() { // Протестить
         System.out.println("Delete test start");
         try {
             taskManager.removeTask(1);
@@ -71,12 +78,24 @@ public class TestMemoryManager implements TestActions {
     @Override
     public void testGetHistory() {
         System.out.println("History test start");
+
         taskManager.getTask(3);
         taskManager.getTask(1);
         taskManager.getTask(2);
         taskManager.getTask(4);
         taskManager.getTask(7);
         taskManager.getTask(1);
+//        taskManager.getTask(3);
+//        taskManager.getTask(1);
+//        taskManager.getTask(2);
+//        taskManager.getTask(4);
+//        taskManager.getTask(7);
+//        taskManager.getTask(1);
+//        taskManager.getTask(4);
+//        taskManager.getTask(4);
+//        taskManager.getTask(4);
+//        taskManager.getTask(4);
+//        taskManager.getTask(4);
 
         int size = taskManager.getHistory().size();
         boolean isCorrect = size <= 5 && size > 0;

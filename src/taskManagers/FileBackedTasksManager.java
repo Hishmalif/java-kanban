@@ -16,11 +16,9 @@ import java.nio.charset.StandardCharsets;
 
 public class FileBackedTasksManager extends InMemoryTaskManager implements TaskManager {
     private Path file;
-    private Path log;
 
-    public FileBackedTasksManager(String filePath, String logPath, boolean isTest) { // Принимаем на вход путь к файлам
+    public FileBackedTasksManager(String filePath, boolean isTest) { // Принимаем на вход путь к файлам
         file = Paths.get(filePath);
-        log = Paths.get(logPath);
 
         if (file.getRoot() == null) { // Если путь задан некорректно - создаем стандартный
             if (!isTest) {
@@ -30,17 +28,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
             }
         }
 
-        if (log.getRoot() == null) { // Также поступаем и с логом пользователя
-            if (!isTest) {
-                log = createDefaultPath("log.csv");
-            } else {
-                log = createDefaultPath("testLog.csv");
-            }
-
-        }
-
-        getDataFromFile(); // Получение данных
         getLogFromFile(); // Получение логов
+        getDataFromFile(); // Получение задач
     }
 
     @Override
@@ -53,6 +42,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     @Override
     public Task update(int id, Task task) {
         super.update(id, task);
+        save();
+        return task;
+    }
+
+    @Override
+    public Task getTask(int id) {
+        Task task = super.getTask(id);
         save();
         return task;
     }
@@ -84,6 +80,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     private void save() { // Обновление файла
         StringBuilder builder = new StringBuilder("id,type,name,status,description,epic" + System.lineSeparator());
 
+        // Собираем данные в строку
         try (FileWriter fileWriter = new FileWriter(file.toString(), StandardCharsets.UTF_8, false)) {
             for (Task task : getAllTask()) {
                 builder.append(task);
@@ -94,21 +91,24 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
             for (SubTask sub : getAllSubTask()) {
                 builder.append(sub);
             }
+            builder.append(System.lineSeparator()).append(historyToString(historyManager));
 
             fileWriter.write(builder.toString());
-
-            try (FileWriter logWriter = new FileWriter(log.toString(), StandardCharsets.UTF_8)) {
-                logWriter.write(historyToString(super.historyManager));
-            }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error write file!");
         }
     }
 
-    private static String historyToString(HistoryManager manager){
+    private static String historyToString(HistoryManager manager) {
         StringBuilder history = new StringBuilder();
-        for (Task element: manager.getHistory()) {
-            history.append(element.getId()).append(",");
+
+        List<Task> element = manager.getHistory(); // ??
+        for (int i = 0; i < element.size(); i++) {
+            if (element.size() - 1 == i) {
+                history.append(element.get(i).getId());
+            } else {
+                history.append(element.get(i).getId()).append(",");
+            }
         }
         return history.toString();
     }
@@ -120,38 +120,54 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         if (Files.notExists(dir)) {
             try {
                 Files.createDirectory(dir); // Создаем стандартную деректорию если не была создана ранее
+                if (Files.notExists(dir)) {
+                    throw new ManagerSaveException("Error create default directory");
+                }
+            } catch (ManagerSaveException e) {
+                System.out.println(e.getMessage());
             } catch (IOException e) {
-                new ManagerSaveException().printStackTrace(); // Сделать красиво
+                throw new RuntimeException("Unknown error while creating directory");
             }
         }
 
         if (Files.notExists(path)) {
             try {
                 Files.createFile(path); // Создаем файл если не был создан ранее
+
+                if (Files.notExists(path)) {
+                    throw new ManagerSaveException("Error create default file");
+                }
+            } catch (ManagerSaveException e) {
+                System.out.println(e.getMessage());
             } catch (IOException e) {
-                new ManagerSaveException().printStackTrace();
+                throw new RuntimeException("Unknown error while creating file");
             }
         }
         return path;
     }
 
-    private List<String> getListFromFile(String path) {
+    private List<String> getListFromFile() {
         List<String> tasks = new ArrayList<>();
 
-        try (FileReader fileReader = new FileReader(path, StandardCharsets.UTF_8)) {
+        try (FileReader fileReader = new FileReader(file.toString(), StandardCharsets.UTF_8)) {
             BufferedReader bufferedReader = new BufferedReader(fileReader);
             while (bufferedReader.ready()) {
                 tasks.add(bufferedReader.readLine());
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error getting line from file");
         }
         return tasks;
     }
 
     private void getDataFromFile() {
-        List<String> tasks = getListFromFile(file.toString());
+        List<String> tasks = getListFromFile();
+
         for (int i = 1; i < tasks.size(); i++) {
+            if (tasks.get(i) == null || tasks.get(i).equals("")) { // Проверяем дошли ли до истории
+                break;
+            }
+
             Task task;
             String[] detail = tasks.get(i).split(",");
 
@@ -166,17 +182,21 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
             task.setId(Integer.parseInt(detail[0]));
             task.setStatus(Statuses.getStatus(detail[3]));
             task.setDescription(detail[4]);
-            add(task);
+            add(task); // Добавляем задачу
         }
     }
 
     private void getLogFromFile() { // Получение данных о логах
-        List<String> logs = getListFromFile(log.toString());
-        for (String line : logs) {
-            String[] tasks = line.split(",");
-            for (String id : tasks) {
-                getTask(Integer.parseInt(id));
-            }
+        List<String> logs = getListFromFile();
+        int size = logs.size() > 2 ? logs.size() - 1 : 1; // Определяем положение логов
+
+        if (logs.isEmpty() || !logs.get(size - 1).equals("") || logs.get(size).equals("")) {
+            return;
+        }
+
+        String[] tasks = logs.get(logs.size() - 1).split(",");
+        for (String id : tasks) {
+            getTask(Integer.parseInt(id.trim()));
         }
     }
 }
