@@ -2,26 +2,45 @@ package tasks;
 
 import taskManagers.Types;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Epic extends Task {
-    private List<Integer> subTasks = new ArrayList<>();
-
-    public Epic() {
-    }
+    private List<SubTask> subTasks = new ArrayList<>();
 
     public Epic(String name) {
         super(name);
-        setStatus(Statuses.NEW);
     }
 
-    public List<Integer> getSubTasks() {
+    public Epic(String name, String description) {
+        super(name, description);
+    }
+
+    @Override
+    public LocalDateTime getEndTime() { // Расчет времени по подзадачам
+        return subTasks.stream()
+                .map(Task::getEndTime)
+                .max(LocalDateTime::compareTo).orElse(getStartTime());
+    }
+
+    public void setStartDateTime() { // Установка минимального времени
+        super.setStartTime(subTasks.stream()
+                .map(Task::getStartTime)
+                .min(LocalDateTime::compareTo).orElse(getStartTime()));
+    }
+
+    public void setDuration() { // Установка продолжительности задачи
+        super.setDuration(subTasks.stream()
+                .map(Task::getDuration)
+                .reduce(Long::sum).orElse(0L));
+    }
+
+    public List<SubTask> getSubTasks() {
         return subTasks;
     }
 
-    public void setSubTasks(List<Integer> subTasks) {
+    public void setSubTasks(List<SubTask> subTasks) {
         this.subTasks = subTasks;
     }
 
@@ -36,12 +55,14 @@ public class Epic extends Task {
 
     @Override
     public int hashCode() {
-        return Objects.hash(subTasks);
+        return Objects.hash(super.hashCode(), subTasks);
     }
 
     @Override
     public String toString() {
-        return String.format("%s,%s,%s,%s,%s,%n", super.getId(), Types.EPIC.name(), super.getName(),
-                super.getStatus(), getDescription());
+        return String.format("%d,%s,%s,%s,%s,%d,%s,%n", super.getId(), Types.EPIC.name(),
+                super.getName(), super.getStatus(), getDescription(), super.getDuration(),
+                super.getStartTime().format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss")));
+
     }
 }

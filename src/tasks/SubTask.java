@@ -3,20 +3,50 @@ package tasks;
 import taskManagers.Types;
 
 import java.util.Objects;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class SubTask extends Task {
     private int epicTask;
 
-    public SubTask() {
-
-    }
-
-    public SubTask(String name) {
-        super(name);
-    }
-
     public SubTask(String name, int epicTask) {
         super(name);
+        this.epicTask = epicTask;
+    }
+
+    public SubTask(String name, String description, int epicTask) {
+        super(name, description);
+        this.epicTask = epicTask;
+    }
+
+    public SubTask(String name, Statuses status, int epicTask) {
+        super(name, status);
+        this.epicTask = epicTask;
+    }
+
+    public SubTask(String name, Statuses status, String description, int epicTask) {
+        super(name, status, description);
+        this.epicTask = epicTask;
+    }
+
+    public SubTask(String name, String description, Statuses status, int epicTask,
+                   long duration, LocalDateTime startTime) {
+        super(name, status, description, duration, startTime);
+        this.epicTask = epicTask;
+    }
+
+    public SubTask(String name, String description, int epicTask, long duration, LocalDateTime startTime) {
+        super(name, description, duration, startTime);
+        this.epicTask = epicTask;
+    }
+
+    public SubTask(String name, Statuses status, int epicTask, long duration, LocalDateTime startTime) {
+        super(name, status, duration, startTime);
+        this.epicTask = epicTask;
+    }
+
+    public SubTask(String name, int epicTask, long duration, LocalDateTime startTime) {
+        super(name, duration, startTime);
         this.epicTask = epicTask;
     }
 
@@ -45,7 +75,10 @@ public class SubTask extends Task {
 
     @Override
     public String toString() {
-        return String.format("%s,%s,%s,%s,%s,%s%n", super.getId(), Types.SUBTASK.name(),
-                super.getName(), super.getStatus().getName(), super.getDescription(), getEpicTask());
+        return String.format("%d,%s,%s,%s,%s,%d,%s,%s%n", super.getId(), Types.SUBTASK.name(),
+                super.getName(), super.getStatus().getName(), super.getDescription(),
+                super.getDuration(),
+                super.getStartTime().format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss")),
+                getEpicTask());
     }
 }

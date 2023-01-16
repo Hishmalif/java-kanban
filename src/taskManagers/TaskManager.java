@@ -3,6 +3,7 @@ package taskManagers;
 import tasks.*;
 
 import java.util.List;
+import java.util.Set;
 
 public interface TaskManager {
     Task add(Task task); // Добавление задач
@@ -16,6 +17,8 @@ public interface TaskManager {
     List<SubTask> getAllSubTask(); // Получение всех подзадач
 
     Task getTask(int id); // Получение задачи
+
+    Set<Task> getPrioritizedTasks(); // Получаем задачи в порядке приоритета
 
     void removeTasks(); // Удаление всех задач
 
