@@ -19,6 +19,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Task add(Task task) { // Импорт задач
         if (task.getName() != null) {
             int id = generateId();
+            checkCrossTaskTime(task);
 
             if (task.getId() < generateId() && task.getId() != 0) {
                 return update(task.getId(), task);
@@ -41,7 +42,6 @@ public class InMemoryTaskManager implements TaskManager {
                 simpleTasks.put(id, task);
                 simpleTasks.get(id).setId(id);
             }
-            checkCrossTaskTime();
         } else {
             Errors.errorMessage(0);
         }
@@ -51,6 +51,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task update(int id, Task task) { // Обновление задач
         if (containsId(id)) {
+            checkCrossTaskTime(task);
             if (task instanceof Epic) {
                 Epic epic = (Epic) task;
 
@@ -66,7 +67,7 @@ public class InMemoryTaskManager implements TaskManager {
             } else {
                 simpleTasks.put(id, task);
             }
-            checkCrossTaskTime();
+
             return task;
         } else {
             throw new IllegalArgumentException("Incorrect ID");
@@ -227,30 +228,27 @@ public class InMemoryTaskManager implements TaskManager {
         epicTasks.get(idEpic).setDuration();
     }
 
-    private void checkCrossTaskTime() {
+    private void checkCrossTaskTime(Task task) {
         Set<Task> tasks = getPrioritizedTasks();
+        tasks.add(task);
 
-        Task task = null;
+        Task first = null;
         Task cross = null;
 
         for (Task t : tasks) {
-            if (task == null) {
-                task = t;
+            if (first == null) {
+                first = t;
                 continue;
             }
 
-            if (task.getEndTime().isAfter(t.getStartTime())) {
-                cross = task;
+            if (first.getEndTime().isAfter(t.getStartTime())) {
+                cross = first;
             }
 
-            task = t;
+            first = t;
         }
         if (cross != null) {
-            try {
-                throw new ManagerSaveException("Время задачи: " + cross.getName() + " уже занято. Укажите другое время!");
-            } catch (ManagerSaveException e) {
-                e.printStackTrace();
-            }
+            throw new IllegalArgumentException("Время задачи уже занято. Укажите другое время!");
         }
     }
 

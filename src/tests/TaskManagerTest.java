@@ -507,6 +507,27 @@ abstract class TaskManagerTest<T extends TaskManager> {
         assertTrue(prioritizedList.containsAll(result));
     }
 
+    @Test
+    public void checkAddTaskWithCrossTime() {
+        //Подготовка
+        String error = "Время задачи уже занято. Укажите другое время!";
+        Task taskTwo = new Task("TaskTwo");
+        task.setStartTime(LocalDateTime.of(2022, 12, 30, 10, 50));
+        taskTwo.setStartTime(LocalDateTime.of(2022, 12, 30, 10, 55));
+        task.setDuration(15);
+        taskTwo.setDuration(10);
+
+        //Действие
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            manager.add(task);
+            manager.add(taskTwo);
+        });
+
+        //Проверка
+        assertEquals(1, manager.getAllTask().size());
+        assertEquals(error, exception.getMessage());
+    }
+
 //    @Test
 //    public void checkCrossTasks() {
 //        //Подготовка
