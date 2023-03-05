@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.time.LocalDateTime;
@@ -16,11 +17,11 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
 abstract class TaskManagerTest<T extends TaskManager> {
-    private Task task;
-    private Epic epic;
-    private SubTask subTaskOne;
-    private SubTask subTaskTwo;
-    private TaskManager manager;
+    protected Task task;
+    protected Epic epic;
+    protected SubTask subTaskOne;
+    protected SubTask subTaskTwo;
+    protected TaskManager manager;
 
     protected void setManager(T manager) {
         this.manager = manager;
@@ -89,7 +90,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void addNewTask() {
+    public void addNewTask() throws IOException, InterruptedException {
         final int taskId = manager.add(task).getId();
         final Task savedTask = manager.getTask(taskId);
 

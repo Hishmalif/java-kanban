@@ -12,24 +12,30 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class HttpHandlerBackend implements HttpHandler {
-    Gson gson = new Gson();
-    FileBackedTasksManager manager;
+    Gson gson;
+    TaskManager manager;
 
-    public HttpHandlerBackend() {
-        manager = new FileBackedTasksManager("data", false);
-    }
+    public HttpHandlerBackend(String apiToken) {
+        gson = new Gson();
+        manager = Managers.getFilesTaskManager(apiToken, false);
+    } // Коснтруктор обработчика
 
     @Override
-    public void handle(HttpExchange exchange) throws IOException {
+    public void handle(HttpExchange exchange) throws IOException { // Обработчик событий
         String type = exchange.getRequestMethod();
         String[] uri = exchange.getRequestURI().toString().split("/");
         InputStream inputStream = exchange.getRequestBody();
         String body = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
         String response;
+        int code = 200;
 
         switch (type) {
             case "GET":
-                if (uri.length == 3 && uri[2].contains("task")) {
+                if (uri.length == 2 && uri[1].contains("tasks")) {
+                    response = responsePriority();
+                    break;
+                } else if (uri.length == 3 && uri[2].contains("task")) {
+                    System.out.println(exchange.getRequestURI());
                     response = responseAllTasks();
                     break;
                 } else if (uri.length == 4 && uri[3].contains("id=")) {
@@ -37,9 +43,6 @@ public class HttpHandlerBackend implements HttpHandler {
                     break;
                 } else if (uri.length == 3 && uri[2].contains("history")) {
                     response = responseHistory();
-                    break;
-                } else if (uri.length == 2 && uri[1].contains("tasks")) {
-                    response = responsePriority();
                     break;
                 } else if (uri.length == 5 && uri[3].contains("epic") && uri[4].contains("id=")) {
                     response = responseEpicSubtasks(uri[4]);
@@ -49,6 +52,7 @@ public class HttpHandlerBackend implements HttpHandler {
                 if (uri.length == 3 && uri[2].contains("task")) {
                     addOrUpdateTasks(body);
                     response = "OK";
+                    break;
                 }
             case "DELETE":
                 if (uri.length == 4 && uri[3].contains("id=")) {
@@ -62,9 +66,10 @@ public class HttpHandlerBackend implements HttpHandler {
                 }
             default:
                 response = "Problem";
+                code = 500;
                 break;
         }
-        exchange.sendResponseHeaders(200, 0);
+        exchange.sendResponseHeaders(code, 0);
 
         try (OutputStream os = exchange.getResponseBody()) {
             os.write(response.getBytes());
@@ -87,7 +92,7 @@ public class HttpHandlerBackend implements HttpHandler {
 
     private String responsePriority() {
         return gson.toJson(manager.getPrioritizedTasks());
-    }
+    } // Возвращает список задач по приоритету
 
     private String responseEpicSubtasks(String uri) {
         int id = Integer.parseInt(uri.split("=")[1]);
@@ -105,7 +110,7 @@ public class HttpHandlerBackend implements HttpHandler {
         } else {
             manager.add(task);
         }
-    }
+    } // Добавление/обновление задач
 
     private void deleteTask(String json) {
         Task task = gson.fromJson(json, Task.class);

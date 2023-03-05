@@ -118,8 +118,6 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTasksMa
             while (reader.ready()) {
                 builder.append(reader.readLine()).append(System.lineSeparator());
             }
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -25,12 +25,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
 
         if (file.getRoot() == null) { // Если путь задан некорректно - создаем стандартный
             if (!isTest) {
-                file = createDefaultPath("data.csv");
+                file = createDefaultPath(filePath);
+
             } else {
                 file = createDefaultPath("testData.csv");
             }
         }
-        getDataFromFile(); // Получение задач
+        //getDataFromFile(); // Получение задач
     }
 
     @Override
@@ -128,15 +129,15 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                 .forEach(s -> getTask(Integer.parseInt(s.trim())));
     }
 
-    private void save() { // Обновление файла
+    protected void save() { // Обновление файла
         StringBuilder builder = new StringBuilder("id,type,name,status,description,duration,startTime,epic"
                 + System.lineSeparator());
 
         // Собираем данные в строку
         try (FileWriter fileWriter = new FileWriter(file.toString(), StandardCharsets.UTF_8, false)) {
-            getAllTask().forEach(task -> builder.append(task));
-            getAllEpic().forEach(epic -> builder.append(epic));
-            getAllSubTask().forEach(subTask -> builder.append(subTask));
+            getAllTask().forEach(builder::append);
+            getAllEpic().forEach(builder::append);
+            getAllSubTask().forEach(builder::append);
             builder.append(System.lineSeparator()).append(historyToString(historyManager));
 
             fileWriter.write(builder.toString());
